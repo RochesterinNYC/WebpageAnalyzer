@@ -11,6 +11,9 @@ sub new {
     images => [],
     scripts => [],
     elements => {},
+    classes => {},
+    ids => {},
+    num_lines => 0,
   };
   bless($self, $invocant);
   return $self;
@@ -19,16 +22,14 @@ sub new {
 sub analyze {
   my($self) = @_;
   $self->{code} = get($self->{url});
-  #my $rc = getprint($dmsurl);
-  #print status_message($rc);
   $self->analyzeElements($self->{code});
+  $self->{num_lines} = $self->{code} =~ tr/\n//;
 }
 
 sub analyzeElements {
   my($self) = @_;
   my @lines = split(/\n/, $self->{code});
   foreach(@lines){
-    print $_ . "\n";
     my @matches = ($_ =~ m/<([\w]+[\d]*[\d\w\s].*?)?>/g);
     foreach my $match (@matches) {
       if($_ =~ m/<([\w]+[\d]*)([\d\w\s].*?)?>/g){
@@ -36,36 +37,38 @@ sub analyzeElements {
         $element = $1;
         $element =~ s/^\s+|\s+$//g;
         if($element eq 'a'){
-          print "link\n";
           $self->processLink($2);
         }
         elsif($element eq 'img'){
-          print "img\n";
-
           $self->processImage($2);
         }
         elsif($element eq 'script'){
-          print "script\n";
-
           $self->processScript($2);
         }
+        $self->processClass($2);
+        $self->processId($2);
       }
     }
   }
-  foreach my $key (keys %{$self->{elements}}){
-    print $key . ": " . $self->{elements}{$key} . " \n";
+}
+ 
+sub processClass {
+  my($self, $class) = @_;
+  if($class =~ m/class[\s]*=[\s]*"([\s\d\w.:_-]*)"/g){
+    my @classes = split(/\s+/, $1);
+    foreach(@classes){
+      $self->{classes}{$_} += 1;
+    }
   }
-  print "       Links       \n";
-  foreach(@{$self->{links}}){
-    print $_ . " \n";
-  }
-  print "       Images       \n";
-  foreach(@{$self->{images}}){
-    print $_ . " \n";
-  }
-  print "       Scripts       \n";
-  foreach(@{$self->{scripts}}){
-    print $_ . " \n";
+}
+
+sub processId {
+  my($self, $id) = @_;
+  if($id =~ m/id[\s]*=[\s]*"([\s\d\w.:_-]*)"/g){
+    my @ids = split(/\s+/, $1);
+    foreach(@ids){
+      $self->{ids}{$_} += 1;
+    }
   }
 }
 
@@ -100,6 +103,34 @@ sub processScript {
       $url = $self->{url} . '/' . $url;
     }
     push(@{$self->{scripts}}, $url);
+  }
+}
+
+sub printInfo {
+  my($self) = @_;
+  print "       Information for " . $self->{url} . "\n";
+  foreach my $key (sort keys %{$self->{elements}}){
+    print $key . ": " . $self->{elements}{$key} . " \n";
+  }
+  print "       Links       \n";
+  foreach(@{$self->{links}}){
+    print $_ . " \n";
+  }
+  print "       Images       \n";
+  foreach(@{$self->{images}}){
+    print $_ . " \n";
+  }
+  print "       Scripts       \n";
+  foreach(@{$self->{scripts}}){
+    print $_ . " \n";
+  }
+  print "       Classes       \n";
+  foreach my $key (sort keys %{$self->{classes}}){
+    print $key . ": " . $self->{classes}{$key} . " \n";
+  }
+  print "       Ids       \n";
+  foreach my $key (sort keys %{$self->{ids}}){
+    print $key . ": " . $self->{ids}{$key} . " \n";
   }
 }
 1;

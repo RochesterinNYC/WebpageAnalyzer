@@ -3,3 +3,4 @@ use Webpage;
 
 $page = new Webpage("http://columbia.edu");
 $page->analyze();
+$page->printInfo();
