@@ -28,21 +28,27 @@ sub analyzeElements {
   my($self) = @_;
   my @lines = split(/\n/, $self->{code});
   foreach(@lines){
-    if($_ =~ m/<([\w]+[\d]*)([\d\w\s].*?)?>/g){
-      $self->{elements}{$1} += 1;
-      if($1 eq 'a'){
-        print "test\n";
-        $self->processLink($2);
-      }
-      elsif($1 eq 'img'){
-        print "img\n";
+    print $_ . "\n";
+    my @matches = ($_ =~ m/<([\w]+[\d]*[\d\w\s].*?)?>/g);
+    foreach my $match (@matches) {
+      if($_ =~ m/<([\w]+[\d]*)([\d\w\s].*?)?>/g){
+        $self->{elements}{$1} += 1;
+        $element = $1;
+        $element =~ s/^\s+|\s+$//g;
+        if($element eq 'a'){
+          print "link\n";
+          $self->processLink($2);
+        }
+        elsif($element eq 'img'){
+          print "img\n";
 
-        $self->processImage($2);
-      }
-      elsif($1 eq 'script'){
-        print "script\n";
+          $self->processImage($2);
+        }
+        elsif($element eq 'script'){
+          print "script\n";
 
-        $self->processScript($2);
+          $self->processScript($2);
+        }
       }
     }
   }
@@ -65,7 +71,7 @@ sub analyzeElements {
 
 sub processLink {
   my($self, $link) = @_;
-  print $link . "\n";
+#  print $link . "\n";
   if($link =~ m/href[\s]*=[\s]*"([\s]*[\/\d\w:?&#%=~+!_.-]*[\s]*)??"/g){
     $url = $1;
     if(!((substr($url, 0, 5) eq 'http:') || (substr($url, 0, 6) eq 'https:'))){
@@ -76,7 +82,7 @@ sub processLink {
 }
 sub processImage {
   my($self, $image) = @_;
-  print $image . "\n";
+#  print $image . "\n";
   if($image =~ m/src[\s]*=[\s]*"([\s]*[\/\d\w:?&#%=~+!_.-]*[\s]*)??"/g){
     $url = $1;
     if(!((substr($url, 0, 5) eq 'http:') || (substr($url, 0, 6) eq 'https:'))){
@@ -87,7 +93,7 @@ sub processImage {
 }
 sub processScript {
   my($self, $script) = @_;
-  print $script . "\n";
+#  print $script . "\n";
   if($script =~ m/src[\s]*=[\s]*"([\s]*[\/\d\w:?&#%=~+!_.-]*[\s]*)??"/g){
     $url = $1;
     if(!((substr($url, 0, 5) eq 'http:') || (substr($url, 0, 6) eq 'https:'))){
