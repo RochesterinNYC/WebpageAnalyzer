@@ -39,6 +39,11 @@ sub analyzeElements {
 
         $self->processImage($2);
       }
+      elsif($1 eq 'script'){
+        print "script\n";
+
+        $self->processScript($2);
+      }
     }
   }
   foreach my $key (keys %{$self->{elements}}){
@@ -50,6 +55,10 @@ sub analyzeElements {
   }
   print "       Images       \n";
   foreach(@{$self->{images}}){
+    print $_ . " \n";
+  }
+  print "       Scripts       \n";
+  foreach(@{$self->{scripts}}){
     print $_ . " \n";
   }
 }
@@ -68,9 +77,7 @@ sub processLink {
 sub processImage {
   my($self, $image) = @_;
   print $image . "\n";
-
   if($image =~ m/src[\s]*=[\s]*"([\s]*[\/\d\w:?&#%=~+!_.-]*[\s]*)??"/g){
-
     $url = $1;
     if(!((substr($url, 0, 5) eq 'http:') || (substr($url, 0, 6) eq 'https:'))){
       $url = $self->{url} . '/' . $url;
@@ -78,5 +85,15 @@ sub processImage {
     push(@{$self->{images}}, $url);
   }
 }
-
+sub processScript {
+  my($self, $script) = @_;
+  print $script . "\n";
+  if($script =~ m/src[\s]*=[\s]*"([\s]*[\/\d\w:?&#%=~+!_.-]*[\s]*)??"/g){
+    $url = $1;
+    if(!((substr($url, 0, 5) eq 'http:') || (substr($url, 0, 6) eq 'https:'))){
+      $url = $self->{url} . '/' . $url;
+    }
+    push(@{$self->{scripts}}, $url);
+  }
+}
 1;
