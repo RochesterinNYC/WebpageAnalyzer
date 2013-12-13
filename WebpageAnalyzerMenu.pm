@@ -123,56 +123,100 @@ sub addWebpage {
 }
 
 sub deleteWebpage {
-  print "What is the index of the webpage you wish to delete?";
+  print "What is the index of the webpage you wish to delete?\n";
   $index = selectWebpage();
   $deleted = $analyzer->deleteWebpage($index);
   print $deleted . " has been deleted from the added websites.\n";
 }
 
 sub webpageInfo {
-  print "What is the index of the webpage you wish to view the full breakdown for?";
+  print "What is the index of the webpage you wish to view the full breakdown for?\n";
   $index = selectWebpage();
   $analyzer->getWebpage($index)->printAllInfo();
 }
 
 sub webpageTotals {
-
+  print "What is the index of the webpage you wish to view the totals for?\n";
+  $index = selectWebpage();
+  $analyzer->getWebpage($index)->printTotalInfo();
 }
 
 sub webpageMostCommons {
-  
+  print "What is the index of the webpage you wish to view the most common elements for?\n";
+  $index = selectWebpage();
+  $analyzer->getWebpage($index)->printCommonInfo();
 }
 
 sub compareElements {
-  
+  print "Total number of Elements:\n";
+  $last_index = @{$analyzer->{webpages}} - 1;
+  for my $i(0..$last_index){
+    $webpage = @{$analyzer->{webpages}}[$i];
+    print $webpage->{url} . ": " . $webpage->numElements() . "\n";
+  }
 }
 
 sub compareDiffElements {
-  
+  print "Total number of different Element Types:\n";
+  $last_index = @{$analyzer->{webpages}} - 1;
+  for my $i(0..$last_index){
+    $webpage = @{$analyzer->{webpages}}[$i];
+    print $webpage->{url} . ": " . $webpage->numElementTypes() . "\n";
+  }
 }
 
 sub compareLinks {
-  
+  print "Total number of Links:\n";
+  $last_index = @{$analyzer->{webpages}} - 1;
+  for my $i(0..$last_index){
+    $webpage = @{$analyzer->{webpages}}[$i];
+    print $webpage->{url} . ": " . $webpage->numLinks() . "\n";
+  }  
 }
 
 sub compareImages {
-  
+  print "Total number of Images:\n";
+  $last_index = @{$analyzer->{webpages}} - 1;
+  for my $i(0..$last_index){
+    $webpage = @{$analyzer->{webpages}}[$i];
+    print $webpage->{url} . ": " . $webpage->numImages() . "\n";
+  }
 }
 
 sub compareScripts {
-  
+  print "Total number of Scripts:\n";
+  $last_index = @{$analyzer->{webpages}} - 1;
+  for my $i(0..$last_index){
+    $webpage = @{$analyzer->{webpages}}[$i];
+    print $webpage->{url} . ": " . $webpage->numScripts() . "\n";
+  } 
 }
 
 sub compareClasses {
-  
+print "Total number of Classes:\n";
+  $last_index = @{$analyzer->{webpages}} - 1;
+  for my $i(0..$last_index){
+    $webpage = @{$analyzer->{webpages}}[$i];
+    print $webpage->{url} . ": " . $webpage->numClasses() . "\n";
+  }  
 }
 
 sub compareIds {
-  
+  print "Total number of Ids:\n";
+  $last_index = @{$analyzer->{webpages}} - 1;
+  for my $i(0..$last_index){
+    $webpage = @{$analyzer->{webpages}}[$i];
+    print $webpage->{url} . ": " . $webpage->numIds() . "\n";
+  }
 }
 
 sub compareLines {
-  
+  print "Total number of Lines:\n";
+  $last_index = @{$analyzer->{webpages}} - 1;
+  for my $i(0..$last_index){
+    $webpage = @{$analyzer->{webpages}}[$i];
+    print $webpage->{url} . ": " . $webpage->{num_lines} . "\n";
+  }
 }
 
 1;

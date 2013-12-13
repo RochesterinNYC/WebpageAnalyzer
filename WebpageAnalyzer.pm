@@ -41,12 +41,6 @@ sub getWebpage {
   return @{$self->{webpages}}[$index];
 }
 
-sub webpageMostLinks {
-  my($self, $test) = @_;
-}
-
-
-
 sub validIndex {
   my($self, $index) = @_;
   $valid = 0;
