@@ -7,9 +7,9 @@ sub new {
   my $self = {
     url => @_,
     code => "",
-    links => [],
-    images => [],
-    scripts => [],
+    links => {},
+    images => {},
+    scripts => {},
     elements => {},
     classes => {},
     ids => {},
@@ -22,8 +22,15 @@ sub new {
 sub analyze {
   my($self) = @_;
   $self->{code} = get($self->{url});
+  if($self->{code} eq ''){
+    print "An error has occurred in the attempt to pull the source code for the url: " . $self->{url} . "\n";
+    return 0;
+  } 
+  #my $rc = getprint($dmsurl);
+  #print status_message($rc);
   $self->analyzeElements($self->{code});
   $self->{num_lines} = $self->{code} =~ tr/\n//;
+  return 1;
 }
 
 sub analyzeElements {
@@ -80,7 +87,7 @@ sub processLink {
     if(!((substr($url, 0, 5) eq 'http:') || (substr($url, 0, 6) eq 'https:'))){
       $url = $self->{url} . '/' . $url;
     }
-    push(@{$self->{links}}, $url);
+    $self->{links}{$url} += 1;
   }
 }
 sub processImage {
@@ -91,7 +98,7 @@ sub processImage {
     if(!((substr($url, 0, 5) eq 'http:') || (substr($url, 0, 6) eq 'https:'))){
       $url = $self->{url} . '/' . $url;
     }
-    push(@{$self->{images}}, $url);
+    $self->{images}{$url} += 1;
   }
 }
 sub processScript {
@@ -102,35 +109,145 @@ sub processScript {
     if(!((substr($url, 0, 5) eq 'http:') || (substr($url, 0, 6) eq 'https:'))){
       $url = $self->{url} . '/' . $url;
     }
-    push(@{$self->{scripts}}, $url);
+    $self->{scripts}{$url} += 1;
   }
 }
 
-sub printInfo {
+sub printAllInfo {
   my($self) = @_;
-  print "       Information for " . $self->{url} . "\n";
+  print "Information for " . $self->{url} . "\n";
   foreach my $key (sort keys %{$self->{elements}}){
-    print $key . ": " . $self->{elements}{$key} . " \n";
+    print "     " . $key . ": " . $self->{elements}{$key} . " \n";
   }
-  print "       Links       \n";
-  foreach(@{$self->{links}}){
-    print $_ . " \n";
+  print "Links\n";
+  foreach my $key (sort keys %{$self->{links}}){
+    print "     " . $key . ": " . $self->{links}{$key} . " \n";
   }
-  print "       Images       \n";
-  foreach(@{$self->{images}}){
-    print $_ . " \n";
+  print "Images\n";
+  foreach my $key (sort keys %{$self->{images}}){
+    print "     " . $key . ": " . $self->{images}{$key} . " \n";
   }
-  print "       Scripts       \n";
-  foreach(@{$self->{scripts}}){
-    print $_ . " \n";
+  print "Scripts       \n";
+  foreach my $key (sort keys %{$self->{scripts}}){
+    print "     " . $key . ": " . $self->{scripts}{$key} . " \n";
   }
-  print "       Classes       \n";
+  print "Classes       \n";
   foreach my $key (sort keys %{$self->{classes}}){
-    print $key . ": " . $self->{classes}{$key} . " \n";
+    print "     " . $key . ": " . $self->{classes}{$key} . " \n";
   }
-  print "       Ids       \n";
+  print "Ids       \n";
   foreach my $key (sort keys %{$self->{ids}}){
-    print $key . ": " . $self->{ids}{$key} . " \n";
+    print "     " . $key . ": " . $self->{ids}{$key} . " \n";
   }
 }
+
+sub printCommonInfo {
+  my($self) = @_;
+  print "Most Common Information for " . $self->{url} . "\n";
+  print "    Most Common Element: " . $self->mostCommonElement() . " \n";
+  print "    Most Common Link: " . $self->mostCommonLink() . " \n";
+  print "    Most Common Image: " . $self->mostCommonImage() . " \n";
+  print "    Most Common Script: " . $self->mostCommonScript() . " \n";
+  print "    Most Common Class: " . $self->mostCommonClass() . " \n";
+  print "    Most Common Id: " . $self->mostCommonId() . " \n";
+}
+
+sub printTotalInfo {
+  my($self) = @_;
+  print "Totals Information for " . $self->{url} . "\n";
+  print "    Total number of Elements: " . $self->numElements() . " \n";
+  print "    Total number of Links: " . $self->numLinks() . " \n";
+  print "    Total number of Images: " . $self->numImages() . " \n";
+  print "    Total number of Scripts: " . $self->numScripts() . " \n";
+  print "    Total number of Classes: " . $self->numClasses() . " \n";
+  print "    Total number of Ids: " . $self->numIds() . " \n";
+}
+
+sub mostCommonLink {
+  my($self) = @_;
+  return $self->mostFromHash(%{$self->{links}});  
+}
+
+sub mostCommonImage {
+  my($self) = @_;
+  return $self->mostFromHash(%{$self->{images}});  
+}
+
+sub mostCommonScript {
+  my($self) = @_;
+  return $self->mostFromHash(%{$self->{scripts}});  
+}
+
+sub mostCommonElement {
+  my($self) = @_;
+  return $self->mostFromHash(%{$self->{elements}});
+}
+
+sub mostCommonClass {
+  my($self) = @_;
+  return $self->mostFromHash(%{$self->{classes}});  
+}
+
+sub mostCommonId {
+  my($self) = @_;
+  return $self->mostFromHash(%{$self->{ids}});  
+}
+
+sub numLinks {
+  my($self) = @_;
+  return $self->numFromHash(%{$self->{links}});  
+}
+
+sub numImages {
+  my($self) = @_;
+  return $self->numFromHash(%{$self->{images}});  
+}
+
+sub numScripts {
+  my($self) = @_;
+  return $self->numFromHash(%{$self->{scripts}});  
+}
+
+sub numElements {
+  my($self) = @_;
+  return $self->numFromHash(%{$self->{elements}});  
+}
+
+sub numElementTypes {
+  my($self) = @_;
+  return scalar keys %{$self->{elements}};  
+}
+
+sub numClasses {
+  my($self) = @_;
+  return $self->numFromHash(%{$self->{classes}});  
+}
+
+sub numIds {
+  my($self) = @_;
+  return $self->numFromHash(%{$self->{ids}});
+}
+
+sub numFromHash {
+  my($self, %hash) = @_;
+  $total_val = 0;
+  foreach my $key (keys %hash){
+    $total_val += $hash{$key};
+  }
+  return $total_val;
+}
+
+sub mostFromHash {
+  my($self, %hash) = @_;
+  $max_key = '';
+  $max_val = 0;
+  foreach my $key (keys %hash){
+    if($hash{$key} > $max_val){
+      $max_val = $hash{$key};
+      $max_key = $key;
+    }
+  }
+  return $max_key;
+}
+
 1;
