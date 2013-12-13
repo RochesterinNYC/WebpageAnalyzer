@@ -1,4 +1,110 @@
 #!usr/bin/perl
+
+#!usr/bin/perl
+
+=head1 NAME
+
+WebpageAnalyzerMenu
+
+=head1 SYNOPSIS
+
+A static module that presents a menu and interacts with a user 
+
+=head1 DESCRIPTION
+
+The menu is presented and interacts with the user through static methods
+that are independent of a WebpageAnalyzerMenu object. However, there is a 
+static WebpageAnalyzer object operates as part of the static Menu class.
+
+=head2 Methods
+
+=over
+
+=item C<operateMenu>
+
+Presents the user with the option menu as long as he or she has not selected 0
+to exit the program.
+
+=item C<operateMenu>
+
+Prints the menu options and takes in user selection input.
+
+=item C<processSelection>
+
+Takes in an option selection and carries out that operation.
+
+=item C<validSelection>
+
+Takes in a selection number and returns whether it is a valid option.
+
+=item C<selectWebpage>
+
+Prints out the currently added webpages and takes in user webpage index input.
+
+=item C<seeAllWebpages>
+
+Prints out all the webpages.
+
+=item C<addWebpage>
+
+Takes in the user inputted url for a webpage to add and adds it.
+
+=item C<deleteWebpage>
+
+Deletes a user selected webpage from the currently added webpages.
+
+=item C<webpageInfo>
+
+Prints out the full breakdown information for a selected webpage.
+
+=item C<webpageTotals>
+
+Prints out the information on totals for elements for a selected webpage.
+
+=item C<webpageMostCommons>
+
+Prints out the information on most common elements for a selected webpage.
+
+=item C<compareElements>
+
+Prints out the total number of elements for each added webpage.
+
+=item C<compareDiffElements>
+
+Prints out the total number of different elements for each added webpage.
+
+=item C<compareLinks>
+
+Prints out the total number of links for each added webpage.
+
+=item C<compareImages>
+
+Prints out the total number of images for each added webpage.
+
+=item C<compareScripts>
+
+Prints out the total number of scripts for each added webpage.
+
+=item C<compareClasses>
+
+Prints out the total number of classes for each added webpage.
+
+=item C<compareIds>
+
+Prints out the total number of ids for each added webpage.
+
+=item C<compareLines>
+
+Prints out the total number of lines for each added webpage.
+
+=back
+
+=head1 AUTHOR
+
+James Wen
+
+=cut
+
 package WebpageAnalyzerMenu;
 use Exporter;
 use WebpageAnalyzer;
@@ -16,7 +122,7 @@ sub operateMenu {
 sub presentMenu {
   $selection = -1;
   while (!validSelection($selection)){
-    print "Please enter the correct number for an option selection:\n";
+    print "\nPlease enter the correct number for an option selection:\n";
     print "Enter 1 to see all Webpages currently in the Analyzer.\n";
     print "Enter 2 to add a Webpage to the Analyzer.\n";
     print "Enter 3 to delete a Webpage from the Analyzer.\n";
@@ -31,7 +137,7 @@ sub presentMenu {
     print "Enter 12 to compare the total number of classes on each Webpage.\n";
     print "Enter 13 to compare the total number of ids on each Webpage.\n";
     print "Enter 14 to compare the total number of lines of code on each Webpage.\n";
-    print "Enter 0 to end the program.\n";
+    print "Enter 0 to end the program.\n\n";
     $selection = <STDIN>;
     chomp($selection);
   }
@@ -41,57 +147,62 @@ sub presentMenu {
   
 sub processSelection {
   $selection = @_[0];
-  if($selection == 1){
-    seeAllWebpages();
-  }
-  if($selection == 2){
-    addWebpage();
-  }
-  if($selection == 3){
-    deleteWebpage();
-  }
-  if($selection == 4){
-    webpageInfo();
-  }
-  if($selection == 5){
-    webpageTotals();
-  }
-  if($selection == 6){
-    webpageMostCommons();
-  }
-  if($selection == 7){
-    compareElements(); 
-  }
-  if($selection == 8){
-    compareDiffElements();
-  }
-  if($selection == 9){
-    compareLinks();
-  }
-  if($selection == 10){
-    compareImages();
-  }
-  if($selection == 11){
-    compareScripts();
-  }
-  if($selection == 12){
-    compareClasses();
-  }
-  if($selection == 13){
-    compareIds();    
-  }
-  if($selection == 14){
-    compareLines();    
-  }
   if($selection == 0){
     print "Thanks for using the Webpage Analyzer.\n";
+    return;
+  }
+  elsif($selection == 1){
+    seeAllWebpages();
+  }
+  elsif($selection == 2){
+    addWebpage();
+  }
+  #Following operations all required at least one webpage to be currently added
+  elsif(@{$analyzer->{webpages}} == 0){
+    print "In order to run this operation, you have to have at least one webpage added.\n";
+  }
+  elsif($selection == 3){
+    deleteWebpage();
+  }
+  elsif($selection == 4){
+    webpageInfo();
+  }
+  elsif($selection == 5){
+    webpageTotals();
+  }
+  elsif($selection == 6){
+    webpageMostCommons();
+  }
+  elsif($selection == 7){
+    compareElements(); 
+  }
+  elsif($selection == 8){
+    compareDiffElements();
+  }
+  elsif($selection == 9){
+    compareLinks();
+  }
+  elsif($selection == 10){
+    compareImages();
+  }
+  elsif($selection == 11){
+    compareScripts();
+  }
+  elsif($selection == 12){
+    compareClasses();
+  }
+  elsif($selection == 13){
+    compareIds();    
+  }
+  elsif($selection == 14){
+    compareLines();    
   }
 }
 
 sub validSelection {
   $selection = @_[0];
   $valid = 0;
-  foreach(0..15){
+  foreach(0..14){
     if($selection == $_){
       $valid = 1;
     }
