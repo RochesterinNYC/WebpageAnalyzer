@@ -1,4 +1,6 @@
 
+Included in this package is are Perl modules that allow a user to retrieve the source code of webpages and analyze their contents/elements. The modules allow for the counting of different elements from the webpages, determining the most common elements and element types, counting the number of lines in the source code, and comparing these attributes among different sites. A user interfacing menu is included.
+
 To read the documentation for the classes, try:
 perldoc Webpage
 perldoc WebpageAnalyzer
